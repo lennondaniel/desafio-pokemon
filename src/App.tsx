@@ -8,13 +8,46 @@ function App() {
   const [pokemon, setPokemon] = useState<IPokemon | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
 
-  useEffect(() => {
-    PokeAPI.Pokemon.resolve("pikachu").then(result => {
+  const fetchPokemon = () => {
+    const oldXHROpen: (method: string, url: string | URL) => void = window.XMLHttpRequest.prototype.open
+
+    window.XMLHttpRequest.prototype.open = function (method: string, url: string): void {
+      const newUrl = url.replace('/pikachu', '/bulbasaur')
+      this.onreadystatechange = function() {
+        if (this.readyState === 4) {
+          Object.defineProperty(this, 'response', { value: JSON.stringify(
+            {
+              name: 'test',
+              abilities: [
+                {
+                  ability: {
+                    name: 'teste'
+                  }
+                }
+              ]
+
+            }
+          )})
+        }
+      }
+  
+      return oldXHROpen.apply(this, [method, newUrl])
+    
+    }
+    
+
+    PokeAPI.Pokemon.fetch("pikachu", false).then(result => {
       setLoading(false)
       setPokemon(result)
+
     });
+  }
+
+  useEffect(() => {
+    fetchPokemon()
   }, [])
 
+ 
   return (
     <>
      <Loading isLoading={loading} />

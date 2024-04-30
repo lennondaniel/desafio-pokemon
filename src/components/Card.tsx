@@ -32,7 +32,7 @@ export default function Card({name, abilities}: Props) {
     
     useEffect(() => {
         setPokemonData({name, abilities})
-    }, [])
+    }, [name, abilities])
   return (
     <CardContainer>
         <CardTitle>{pokemonData?.name}</CardTitle>
